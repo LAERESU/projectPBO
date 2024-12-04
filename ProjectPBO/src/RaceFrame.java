@@ -65,6 +65,7 @@ public class RaceFrame extends JFrame {
                 x = 0;
                 if (raceFinished.compareAndSet(false, true)) {
                     JOptionPane.showMessageDialog(this, dogName + " wins the race!");
+                    new FinishFrame(dogLabel, dogName, 100);
                 }
                 ((Timer) e.getSource()).stop();
             }
