@@ -161,7 +161,7 @@ public class StartFrame extends JFrame {
             });
 
             selectButton.addActionListener(e -> {
-                new RaceFrame(dog);
+                new RaceFrame(dog, dogs); // Kirim semua anjing ke RaceFrame, bersama dengan anjing yang dipilih
                 dogSelectionFrame.dispose();
             });
 
