@@ -36,9 +36,15 @@ public class StartFrame extends JFrame {
             }
         };
         betPanel.setBackground(Color.YELLOW);
-        betPanel.setBounds(550, 350, 500, 300);
         betPanel.setOpaque(false);
         betPanel.setLayout(null);
+
+        int panelWidth = 500;
+        int panelHeight = 300;
+
+        int x = (400);
+        int y = (200);
+        betPanel.setBounds(x, y, panelWidth, panelHeight);
 
         betField = new JTextField();
         betField.setBounds(170, 160, 160, 30);
@@ -79,11 +85,22 @@ public class StartFrame extends JFrame {
     private void showDogSelection() {
         JFrame dogSelectionFrame = new JFrame("Choose Your Dog");
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
-        dogSelectionFrame.setLayout(new BorderLayout());
+        dogSelectionFrame.setLayout(null);
 
         JPanel dogSelectionPanel = new JPanel();
-        dogSelectionPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 20));
+        dogSelectionPanel.setLayout(null);
         dogSelectionPanel.setOpaque(false);
+        dogSelectionPanel.setBounds(0, 0, WIDTH, HEIGHT);
+
+        int buttonWidth = 100;
+        int buttonHeight = 100;
+        int buttonSpacing = 50;
+
+        int centerX = WIDTH / 2;
+        int thirdButtonIndex = 2;
+        int thirdButtonX = thirdButtonIndex * (buttonWidth + buttonSpacing);
+        int offset = centerX - thirdButtonX - (buttonWidth / 2);
+        int startX = offset;
 
         for (int i = 0; i < dogs.size(); i++) {
             DogClass dog = dogs.get(i);
@@ -91,21 +108,55 @@ public class StartFrame extends JFrame {
             JButton selectButton = new JButton();
             ImageIcon originalDogIcon = new ImageIcon("ProjectPBO/res/image/dog/" + dog.getImgPath());
 
-            Image dogImage = originalDogIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            Image dogImage = originalDogIcon.getImage().getScaledInstance(buttonWidth, buttonHeight,
+                    Image.SCALE_SMOOTH);
             ImageIcon resizedDogIcon = new ImageIcon(dogImage);
 
             selectButton.setIcon(resizedDogIcon);
-            selectButton.setPreferredSize(new Dimension(120, 120));
+            selectButton.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
             selectButton.setBorder(BorderFactory.createEmptyBorder());
             selectButton.setFocusPainted(false);
+            selectButton.setContentAreaFilled(false);
+
+            int buttonX = startX + i * (buttonWidth + buttonSpacing);
+            selectButton.setBounds(buttonX, 500, buttonWidth, buttonHeight);
+
+            JPanel popupPanel = new JPanel();
+            popupPanel.setLayout(new BoxLayout(popupPanel, BoxLayout.Y_AXIS));
+            popupPanel.setBackground(new Color(255, 255, 200));
+            popupPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
+            popupPanel.setVisible(false);
+
+            JLabel nameLabel = new JLabel("Name: " + dog.getName());
+            JLabel conditionLabel = new JLabel("Condition: " + dog.getCondition());
+            JLabel skillLabel = new JLabel("Skill: " + dog.getSkill());
+            JLabel speedLabel = new JLabel("Speed: " + dog.getBaseSpeed());
+
+            popupPanel.add(nameLabel);
+            popupPanel.add(conditionLabel);
+            popupPanel.add(skillLabel);
+            popupPanel.add(speedLabel);
 
             selectButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    selectButton.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
+
+                    int popupX = selectButton.getX() + dogSelectionPanel.getX();
+                    int popupY = selectButton.getY() - popupPanel.getPreferredSize().height - 10;
+
+                    popupPanel.setBounds(popupX, popupY, popupPanel.getPreferredSize().width,
+                            popupPanel.getPreferredSize().height);
+                    popupPanel.setVisible(true);
+
+                    dogSelectionPanel.add(popupPanel);
+                    dogSelectionPanel.revalidate();
+                    dogSelectionPanel.repaint();
                 }
 
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    selectButton.setBorder(BorderFactory.createEmptyBorder());
+                    popupPanel.setVisible(false);
+                    dogSelectionPanel.remove(popupPanel);
+                    dogSelectionPanel.revalidate();
+                    dogSelectionPanel.repaint();
                 }
             });
 
@@ -116,8 +167,7 @@ public class StartFrame extends JFrame {
 
             dogSelectionPanel.add(selectButton);
         }
-
-        dogSelectionFrame.add(dogSelectionPanel, BorderLayout.SOUTH);
+        dogSelectionFrame.add(dogSelectionPanel);
         dogSelectionFrame.setVisible(true);
     }
 
