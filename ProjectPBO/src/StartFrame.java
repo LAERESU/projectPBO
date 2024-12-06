@@ -61,9 +61,14 @@ public class StartFrame extends JFrame {
                 String betAmount = betField.getText();
                 if (!betAmount.isEmpty()) {
                     try {
-                        // int bet = Integer.parseInt(betAmount);
-                        showDogSelection();
-                        dispose();
+                        int bet = Integer.parseInt(betAmount);
+                        if (bet < 50) {
+                            JOptionPane.showMessageDialog(null, "Bet amount must be at least 50!", "Invalid Bet",
+                                    JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            showDogSelection();
+                            dispose();
+                        }
                     } catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(null, "Please enter a valid bet amount!", "Invalid Bet",
                                 JOptionPane.ERROR_MESSAGE);
@@ -121,48 +126,103 @@ public class StartFrame extends JFrame {
             int buttonX = startX + i * (buttonWidth + buttonSpacing);
             selectButton.setBounds(buttonX, 500, buttonWidth, buttonHeight);
 
-            JPanel popupPanel = new JPanel();
+            // Panel yang menampilkan informasi anjing (popup)
+            JPanel popupPanel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2d = (Graphics2D) g;
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    int arcSize = 20;
+                    g2d.setColor(Color.YELLOW);
+                    g2d.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), arcSize, arcSize));
+                }
+            };
             popupPanel.setLayout(new BoxLayout(popupPanel, BoxLayout.Y_AXIS));
-            popupPanel.setBackground(new Color(255, 255, 200));
-            popupPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
-            popupPanel.setVisible(false);
+            popupPanel.setOpaque(false);
+            popupPanel.setPreferredSize(new Dimension(250, 300));
 
-            JLabel nameLabel = new JLabel("Name: " + dog.getName());
-            JLabel conditionLabel = new JLabel("Condition: " + dog.getCondition());
+            // Menambahkan padding agar teks tidak terlalu rapat dengan batas
+            popupPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            Font headerFont = new Font("Arial", Font.BOLD, 16);
+            Font labelFont = new Font("Arial", Font.PLAIN, 14);
+
+            // Label dengan teks anjing
+            JLabel nameLabel = new JLabel(dog.getName());
+            nameLabel.setFont(headerFont);
+            nameLabel.setForeground(Color.DARK_GRAY);
+            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel conditionLabel = new JLabel("Condition: " + dog.getDogCondition());
+            conditionLabel.setFont(labelFont);
+            conditionLabel.setForeground(Color.DARK_GRAY);
+            conditionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
             JLabel skillLabel = new JLabel("Skill: " + dog.getSkill());
-            JLabel speedLabel = new JLabel("Speed: " + dog.getBaseSpeed());
+            skillLabel.setFont(labelFont);
+            skillLabel.setForeground(Color.DARK_GRAY);
+            skillLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+            JLabel speedLabel = new JLabel("Base Speed: " + dog.getBaseSpeed());
+            speedLabel.setFont(labelFont);
+            speedLabel.setForeground(Color.DARK_GRAY);
+            speedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel priceLabel = new JLabel("Price: " + dog.getPrice());
+            priceLabel.setFont(labelFont);
+            priceLabel.setForeground(Color.DARK_GRAY);
+            priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            // Menambahkan pemisah antar informasi
+            JSeparator separator1 = new JSeparator();
+            JSeparator separator2 = new JSeparator();
+            JSeparator separator3 = new JSeparator();
+            JSeparator separator4 = new JSeparator();
+
+            // Menambahkan label dan pemisah ke panel popup
             popupPanel.add(nameLabel);
+            popupPanel.add(separator1);
             popupPanel.add(conditionLabel);
+            popupPanel.add(separator2);
             popupPanel.add(skillLabel);
+            popupPanel.add(separator3);
             popupPanel.add(speedLabel);
+            popupPanel.add(separator4);
+            popupPanel.add(priceLabel);
+
+            // Membuat scroll pane untuk panel popup
+            JScrollPane scrollPane = new JScrollPane(popupPanel);
+            scrollPane.setPreferredSize(new Dimension(250, 300));
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+            // Menambahkan efek bayangan
+            popupPanel.setBackground(Color.YELLOW); // Pastikan panel kuning terlihat
+            popupPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
+            popupPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             selectButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    // Hitung posisi popup agar berada di tengah tombol
+                    int popupX = selectButton.getX() + (selectButton.getWidth() - scrollPane.getWidth()) / 2;
+                    int popupY = selectButton.getY() - scrollPane.getPreferredSize().height - 10;
 
-                    int popupX = selectButton.getX() + dogSelectionPanel.getX();
-                    int popupY = selectButton.getY() - popupPanel.getPreferredSize().height - 10;
+                    // Mengatur posisi dan visibilitas popup
+                    scrollPane.setBounds(popupX, popupY, scrollPane.getPreferredSize().width,
+                            scrollPane.getPreferredSize().height);
+                    scrollPane.setVisible(true);
 
-                    popupPanel.setBounds(popupX, popupY, popupPanel.getPreferredSize().width,
-                            popupPanel.getPreferredSize().height);
-                    popupPanel.setVisible(true);
-
-                    dogSelectionPanel.add(popupPanel);
+                    dogSelectionPanel.add(scrollPane);
                     dogSelectionPanel.revalidate();
                     dogSelectionPanel.repaint();
                 }
 
                 public void mouseExited(java.awt.event.MouseEvent evt) {
-                    popupPanel.setVisible(false);
-                    dogSelectionPanel.remove(popupPanel);
+                    scrollPane.setVisible(false);
+                    dogSelectionPanel.remove(scrollPane);
                     dogSelectionPanel.revalidate();
                     dogSelectionPanel.repaint();
                 }
-            });
-
-            selectButton.addActionListener(e -> {
-                new RaceFrame(dog, dogs); // Kirim semua anjing ke RaceFrame, bersama dengan anjing yang dipilih
-                dogSelectionFrame.dispose();
             });
 
             dogSelectionPanel.add(selectButton);

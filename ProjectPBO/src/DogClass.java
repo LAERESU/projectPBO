@@ -5,14 +5,16 @@ public class DogClass {
     String skill;
     int baseSpeed;
     String imgPath;
+    private int price;
 
-    public DogClass(int id, String name, String condition, String skill, int baseSpeed, String imgPath) {
+    public DogClass(int id, String name, String condition, String skill, int baseSpeed, String imgPath, int price) {
         this.id = id;
         this.name = name;
         this.condition = condition;
         this.skill = skill;
         this.baseSpeed = baseSpeed;
         this.imgPath = imgPath;
+        this.price = price;
     }
 
     public int getID() {
@@ -23,7 +25,7 @@ public class DogClass {
         return name;
     }
 
-    public String getCondition() {
+    public String getDogCondition() {
         return condition;
     }
 
@@ -37,6 +39,10 @@ public class DogClass {
 
     public String getImgPath() {
         return imgPath;
+    }
+
+    public int getPrice() {
+        return price;
     }
 
     public double getEffectiveSpeed(Arena arena) {
