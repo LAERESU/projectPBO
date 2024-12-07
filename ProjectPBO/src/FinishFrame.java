@@ -9,56 +9,56 @@ public class FinishFrame extends JFrame {
     public FinishFrame(JLabel dogLabel, String dogName, int koinWin) {
         super("Finish");
 
-        // Set up window
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
-        this.getContentPane().setBackground(Color.BLUE);
+        this.setLocationRelativeTo(null);
 
-        // Use BorderLayout for main layout
-        this.setLayout(new BorderLayout());
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon podiumImage = new ImageIcon("ProjectPBO/res/image/podium.jpeg");
+                g.drawImage(podiumImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        mainPanel.setLayout(new BorderLayout());
+        this.setContentPane(mainPanel);
 
-        // Panel to center the content
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(Color.BLUE);
-        centerPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the content horizontally
-        centerPanel.setAlignmentY(Component.CENTER_ALIGNMENT); // Center the content vertically
+        centerPanel.setOpaque(false);
+        centerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        dogLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the image horizontally
+        dogLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dogLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        // Name label
         JLabel nameLabel = new JLabel("Winner: " + dogName);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 36)); // Set a large bold font
-        nameLabel.setForeground(Color.WHITE); // Set the text color to white
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the name horizontally
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel koinLabel = new JLabel("Koin yang didapat: " + koinWin);
-        koinLabel.setFont(new Font("Arial", Font.BOLD, 36)); // Set a large bold font
-        koinLabel.setForeground(Color.WHITE); // Set the text color to white
-        koinLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the name horizontally
-        
+        koinLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        koinLabel.setForeground(Color.WHITE);
+        koinLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add image and name to the center panel
+        centerPanel.add(Box.createVerticalStrut(200));
         centerPanel.add(dogLabel);
-        centerPanel.add(Box.createVerticalStrut(20)); // Add vertical space between image and name
+        centerPanel.add(Box.createVerticalStrut(20));
         centerPanel.add(nameLabel);
-
-        // Add vertical space between name and koin
         centerPanel.add(Box.createVerticalStrut(20));
         centerPanel.add(koinLabel);
 
-        // Add center panel to the frame
-        this.add(centerPanel, BorderLayout.CENTER);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Set the frame visible
         this.setVisible(true);
     }
 
-
-    // public static void main(String[] args) {
-    //     DogClass winner = new DogClass(1, "Doggo", "Good", "Jump", 10, "D:\\KULI AH\\SEMESTER 5\\PBO\\Praktikum\\projectPBO\\ProjectPBO\\res\\image\\dog\\1.png");
-    //     SwingUtilities.invokeLater(() -> {
-    //         new FinishFrame(winner, 12);
-    //     });
-    // }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JLabel dogLabel = new JLabel(new ImageIcon("path_to_dog_image/dog.png"));
+            new FinishFrame(dogLabel, "Doggo", 100);
+        });
+    }
 }
