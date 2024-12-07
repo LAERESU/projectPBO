@@ -225,6 +225,11 @@ public class StartFrame extends JFrame {
                 }
             });
 
+            selectButton.addActionListener(e -> {
+                new RaceFrame(dog, dogs);
+                dogSelectionFrame.dispose();
+            });
+
             dogSelectionPanel.add(selectButton);
         }
         dogSelectionFrame.add(dogSelectionPanel);
