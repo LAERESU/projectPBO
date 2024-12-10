@@ -10,6 +10,7 @@ public class StartFrame extends JFrame {
     private static final int HEIGHT = 900;
     private List<DogClass> dogs;
     private JTextField betField;
+    private int remainingBets;
 
     public StartFrame() {
         super("Start");
@@ -62,10 +63,11 @@ public class StartFrame extends JFrame {
                 if (!betAmount.isEmpty()) {
                     try {
                         int bet = Integer.parseInt(betAmount);
-                        if (bet < 50) {
-                            JOptionPane.showMessageDialog(null, "Bet amount must be at least 50!", "Invalid Bet",
+                        if (bet < 1) {
+                            JOptionPane.showMessageDialog(null, "Bet amount must be at least 1!", "Invalid Bet",
                                     JOptionPane.ERROR_MESSAGE);
                         } else {
+                            remainingBets = bet;
                             showDogSelection();
                             dispose();
                         }
@@ -92,6 +94,30 @@ public class StartFrame extends JFrame {
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
         dogSelectionFrame.setLayout(null);
 
+        JPanel betInfoPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2d.setColor(new Color(255, 165, 0));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Border melengkung
+
+                g2d.setColor(new Color(0, 0, 0, 50));
+                g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 30, 30);
+            }
+        };
+        betInfoPanel.setLayout(new BorderLayout());
+        betInfoPanel.setBounds(10, 10, 220, 60);
+        betInfoPanel.setOpaque(false);
+
+        JLabel betInfoLabel = new JLabel("Coins: " + remainingBets);
+        betInfoLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        betInfoLabel.setForeground(Color.WHITE);
+        betInfoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        betInfoPanel.add(betInfoLabel, BorderLayout.CENTER);
+
         JPanel dogSelectionPanel = new JPanel();
         dogSelectionPanel.setLayout(null);
         dogSelectionPanel.setOpaque(false);
@@ -100,7 +126,6 @@ public class StartFrame extends JFrame {
         int buttonWidth = 100;
         int buttonHeight = 100;
         int buttonSpacing = 50;
-
         int centerX = WIDTH / 2;
         int thirdButtonIndex = 2;
         int thirdButtonX = thirdButtonIndex * (buttonWidth + buttonSpacing);
@@ -225,13 +250,41 @@ public class StartFrame extends JFrame {
                 }
             });
 
+            JLabel clickCountLabel = new JLabel("bet: 0X");
+            clickCountLabel.setBounds(buttonX, 610, buttonWidth, 30);
+            clickCountLabel.setForeground(Color.BLACK);
+            clickCountLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            dog.setClickCount(0);
+
             selectButton.addActionListener(e -> {
+                if (remainingBets > 0) {
+                    dog.incrementClickCount(); // Increment click count
+                    remainingBets--; // Kurangi sisa bet
+                    clickCountLabel.setText("Bet: " + dog.getClickCount() + "X"); // Update label
+                    betInfoLabel.setText("Coins: " + remainingBets);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No bets remaining!", "Bet Limit Reached",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            });
+
+            JButton startRaceButton = new JButton("Start Race");
+            startRaceButton.setBounds(600, 700, 200, 50);
+            startRaceButton.setBackground(Color.GREEN);
+            startRaceButton.setForeground(Color.WHITE);
+            startRaceButton.setFocusPainted(false);
+            startRaceButton.setUI(new RoundButtonUI());
+
+            startRaceButton.addActionListener(e -> {
                 new RaceFrame(dog, dogs);
                 dogSelectionFrame.dispose();
             });
 
             dogSelectionPanel.add(selectButton);
+            dogSelectionPanel.add(clickCountLabel);
+            dogSelectionPanel.add(startRaceButton);
         }
+        dogSelectionFrame.add(betInfoPanel);
         dogSelectionFrame.add(dogSelectionPanel);
         dogSelectionFrame.setVisible(true);
     }
