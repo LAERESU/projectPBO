@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RaceFrame extends JFrame {
@@ -53,25 +54,34 @@ public class RaceFrame extends JFrame {
     }
 
     private void startDogRace(JLabel dogLabel, int baseSpeed, String dogName) {
-        Timer timer = new Timer(50, e -> {
-            if (raceFinished.get()) {
-                ((Timer) e.getSource()).stop();
-                return;
-            }
+    Timer timer = new Timer(50, e -> {
+        if (raceFinished.get()) {
+            ((Timer) e.getSource()).stop();
+            return;
+        }
 
-            int x = dogLabel.getX();
-            x -= baseSpeed;
-            if (x <= 0) {
-                x = 0;
-                if (raceFinished.compareAndSet(false, true)) {
-                    JOptionPane.showMessageDialog(this, dogName + " wins the race!");
-                    new FinishFrame(dogLabel, dogName, 100);
-                }
-                ((Timer) e.getSource()).stop();
+        int x = dogLabel.getX();
+        x -= baseSpeed;
+        if (x <= 0) {
+            x = 0;
+            if (raceFinished.compareAndSet(false, true)) {
+                int prize = calculatePrize(); 
+                JOptionPane.showMessageDialog(this, dogName + " wins the race!\nPrize: " + prize);
+                new FinishFrame(dogLabel, dogName, prize); 
             }
-            dogLabel.setLocation(x, dogLabel.getY());
-        });
+            ((Timer) e.getSource()).stop();
+        }
+        dogLabel.setLocation(x, dogLabel.getY());
+    });
 
-        timer.start();
-    }
+    timer.start();
+}
+
+private int calculatePrize() {
+    Random random = new Random();
+    int basePrize = 100; 
+    int bonus = random.nextInt(401); 
+    return basePrize + bonus;
+}
+
 }
