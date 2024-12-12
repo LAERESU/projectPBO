@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -12,13 +11,15 @@ public class RaceFrame extends JFrame {
     private AtomicBoolean raceFinished = new AtomicBoolean(false);
     private CountDownLatch startSignal;
     private Obstacle obstacle;
+    private int remainingBets;
 
-    public RaceFrame(DogClass selectedDog, List<DogClass> allDogs, Obstacle obstacle) {
+    public RaceFrame(DogClass selectedDog, List<DogClass> allDogs, Obstacle obstacle, int coins) {
         super("Race");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
         this.setLayout(null);
         this.getContentPane().setBackground(Color.GREEN);
+        this.remainingBets = coins;
 
         this.allDogs = allDogs;
         this.startSignal = new CountDownLatch(1);
@@ -71,7 +72,7 @@ public class RaceFrame extends JFrame {
     
             racePanel.add(obstaclePanel);
     
-            Thread dogThread = new Thread(new DogRaceTask(dogLabel, dog.getBaseSpeed(), dog.getName(), obstacleX, obstacleWidth));
+            Thread dogThread = new Thread(new DogRaceTask(dogLabel, dog.getBaseSpeed(), dog.getName(), obstacleX, obstacleWidth, dog.getPrice()));
             dogThread.start();
         }
     
@@ -87,14 +88,16 @@ public class RaceFrame extends JFrame {
         private int obstacleX;
         private int obstacleWidth;
         private int originalSpeed;
+        private int prize;
         private boolean isSlowed = false;
     
-        public DogRaceTask(JLabel dogLabel, int baseSpeed, String dogName, int obstacleX, int obstacleWidth) {
+        public DogRaceTask(JLabel dogLabel, int baseSpeed, String dogName, int obstacleX, int obstacleWidth, int prize) {
             this.dogLabel = dogLabel;
             this.baseSpeed = baseSpeed;
             this.dogName = dogName;
             this.obstacleX = obstacleX;
             this.obstacleWidth = obstacleWidth;
+            this.prize = prize;
             this.originalSpeed = baseSpeed;
         }
     
@@ -124,9 +127,8 @@ public class RaceFrame extends JFrame {
                         if (x <= 0) {
                             x = 0;
                             if (raceFinished.compareAndSet(false, true)) {
-                                int prize = calculatePrize();
                                 JOptionPane.showMessageDialog(RaceFrame.this, dogName + " wins the race!\nPrize: " + prize);
-                                new FinishFrame(dogLabel, dogName, prize);
+                                new FinishFrame(dogLabel, dogName, prize, remainingBets);
                             }
                         }
     
@@ -138,13 +140,6 @@ public class RaceFrame extends JFrame {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-        }
-    
-        private int calculatePrize() {
-            Random random = new Random();
-            int basePrize = 100;
-            int bonus = random.nextInt(401);
-            return basePrize + bonus;
         }
     }      
 }

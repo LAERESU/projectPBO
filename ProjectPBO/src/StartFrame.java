@@ -4,19 +4,22 @@ import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Random;
 
 public class StartFrame extends JFrame {
     private static final int WIDTH = 1440;
     private static final int HEIGHT = 900;
     private List<DogClass> dogs;
     private JTextField betField;
-    private int remainingBets;
+    public int remainingBets;
+    Obstacle randomArena = null;
 
-    public StartFrame() {
+    public StartFrame(int coins) {
         super("Start");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(WIDTH, HEIGHT);
         this.setLayout(null);
+        this.remainingBets = coins;
 
         this.getContentPane().setBackground(Color.CYAN);
 
@@ -25,6 +28,51 @@ public class StartFrame extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        try {
+            randomArena = DbConnect.getRandomArena();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        Random random = new Random();
+        for (DogClass dog : dogs) {   // Modifier jika skill sesuai dengan arena
+            boolean isSkillMatched = dog.getSkill().equals(randomArena.getName());
+        
+            if (dog.getDogCondition().equals("Super")) {
+                if (isSkillMatched) {
+                    dog.setBaseSpeed(random.nextInt(3, 5)); // Keunggulan besar jika skill sesuai
+                    dog.setPrice(random.nextInt(3, 6)); // Hadiah lebih kecil untuk peluang menang besar
+                } else {
+                    dog.setBaseSpeed(random.nextInt(2, 4)); // Keunggulan kecil
+                    dog.setPrice(random.nextInt(5, 8));
+                }
+            } else if (dog.getDogCondition().equals("Healthy")) {
+                if (isSkillMatched) {
+                    dog.setBaseSpeed(random.nextInt(2, 4)); // Sedang jika skill sesuai
+                    dog.setPrice(random.nextInt(5, 8)); // Hadiah menengah
+                } else {
+                    dog.setBaseSpeed(random.nextInt(1, 3)); // Keunggulan rendah
+                    dog.setPrice(random.nextInt(7, 12)); // Hadiah lebih besar
+                }
+            } else if (dog.getDogCondition().equals("Tired")) {
+                if (isSkillMatched) {
+                    dog.setBaseSpeed(random.nextInt(1, 3)); // Minimal jika skill sesuai
+                    dog.setPrice(random.nextInt(7, 12)); // Hadiah menengah ke atas
+                } else {
+                    dog.setBaseSpeed(random.nextInt(0, 2)); // Hampir tidak ada keuntungan
+                    dog.setPrice(random.nextInt(10, 15)); // Hadiah besar untuk peluang kecil
+                }
+            } else if (dog.getDogCondition().equals("Injured")) {
+                if (isSkillMatched) {
+                    dog.setBaseSpeed(random.nextInt(0, 2)); // Sangat minimal jika skill sesuai
+                    dog.setPrice(random.nextInt(10, 15)); // Hadiah besar
+                } else {
+                    dog.setBaseSpeed(random.nextInt(0, 1)); // Hampir tidak ada
+                    dog.setPrice(random.nextInt(15, 20)); // Hadiah sangat besar untuk peluang kecil
+                }
+            }
+        }
+
 
         JPanel betPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
@@ -60,15 +108,15 @@ public class StartFrame extends JFrame {
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String betAmount = betField.getText();
-                if (!betAmount.isEmpty()) {
+                if (remainingBets == 0) {
                     try {
                         int bet = Integer.parseInt(betAmount);
                         if (bet < 1) {
                             JOptionPane.showMessageDialog(null, "Bet amount must be at least 1!", "Invalid Bet",
                                     JOptionPane.ERROR_MESSAGE);
                         } else {
-                            remainingBets = bet;
-                            showDogSelection();
+                            remainingBets += bet;
+                            showDogSelection(randomArena);
                             dispose();
                         }
                     } catch (NumberFormatException ex) {
@@ -89,7 +137,7 @@ public class StartFrame extends JFrame {
         this.setVisible(true);
     }
 
-    private void showDogSelection() {
+    private void showDogSelection(Obstacle randomArena) {
         JFrame dogSelectionFrame = new JFrame("Choose Your Dog");
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
         dogSelectionFrame.setLayout(null);
@@ -253,6 +301,7 @@ public class StartFrame extends JFrame {
                     remainingBets--; 
                     clickCountLabel.setText("Bet: " + dog.getClickCount() + "X"); 
                     betInfoLabel.setText("Coins: " + remainingBets);
+                    dog.setPrice();
                 } else {
                     JOptionPane.showMessageDialog(null, "No bets remaining!", "Bet Limit Reached",
                             JOptionPane.WARNING_MESSAGE);
@@ -260,19 +309,24 @@ public class StartFrame extends JFrame {
             });
 
             JButton startRaceButton = new JButton("Start Race");
-            startRaceButton.setBounds(600, 700, 200, 50);
+            startRaceButton.setBounds(10, 100, 220, 60);
             startRaceButton.setBackground(Color.GREEN);
             startRaceButton.setForeground(Color.WHITE);
             startRaceButton.setFocusPainted(false);
             startRaceButton.setUI(new RoundButtonUI());
 
             startRaceButton.addActionListener(e -> {
-                try {
-                    Obstacle randomArena = DbConnect.getRandomArena(); 
-                    new RaceFrame(dog, dogs, randomArena); 
+                for (DogClass d : dogs) {
+                    if (d.getClickCount() == 0) {
+                        d.setPrice(0);
+                    }
+                }
+                boolean anyDogBetted = dogs.stream().anyMatch(d -> d.getClickCount() > 0);
+                if (anyDogBetted) {
+                    new RaceFrame(dog, dogs, randomArena, remainingBets); 
                     dogSelectionFrame.dispose(); 
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Error fetching arena: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No dog has been betted on!", "No Bets", JOptionPane.WARNING_MESSAGE);
                 }
             });
             

@@ -67,4 +67,16 @@ public class DogClass {
         effectiveSpeed *= (1 - arena.getReduce());
         return effectiveSpeed;
     }
+
+    public void setPrice(){
+        this.price += price;
+    }
+
+    public void setPrice(int price){
+        this.price = price;
+    }
+
+    public void setBaseSpeed(int baseSpeed){
+        this.baseSpeed += baseSpeed;
+    }
 }

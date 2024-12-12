@@ -1,17 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.ImageIcon;
 
 public class FinishFrame extends JFrame {
     int width = 1440;
     int height = 900;
+    private int remainingBets;
 
-    public FinishFrame(JLabel dogLabel, String dogName, int koinWin) {
+    public FinishFrame(JLabel dogLabel, String dogName, int koinWin, int coins) {
         super("Finish");
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
         this.setLocationRelativeTo(null);
+        this.remainingBets = coins;
 
         JPanel mainPanel = new JPanel() {
             @Override
@@ -50,15 +51,24 @@ public class FinishFrame extends JFrame {
         centerPanel.add(Box.createVerticalStrut(20));
         centerPanel.add(koinLabel);
 
+        JButton playAgainButton = new JButton("Play Again");
+        playAgainButton.setFont(new Font("Arial", Font.BOLD, 24));
+        playAgainButton.setForeground(Color.WHITE);
+        playAgainButton.setBackground(new Color(0, 123, 255));
+        playAgainButton.setFocusPainted(false);
+        playAgainButton.setBorderPainted(false);
+        playAgainButton.setOpaque(true);
+        playAgainButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        playAgainButton.addActionListener(e -> {
+            new StartFrame(remainingBets);
+            this.dispose();
+        });
+
+        centerPanel.add(Box.createVerticalStrut(50));
+        centerPanel.add(playAgainButton);
+
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         this.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JLabel dogLabel = new JLabel(new ImageIcon("path_to_dog_image/dog.png"));
-            new FinishFrame(dogLabel, "Doggo", 100);
-        });
     }
 }

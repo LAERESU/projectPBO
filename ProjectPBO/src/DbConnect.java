@@ -38,7 +38,7 @@ public class DbConnect {
                 String skill = resultSet.getString("skill");
                 int baseSpeed = resultSet.getInt("baseSpeed");
                 String imgPath = resultSet.getString("imgPath");
-                int price = resultSet.getInt("price");
+                int price = 0;
 
                 dogs.add(new DogClass(id, name, dogCondition, skill, baseSpeed, imgPath, price));                                                                                     
             }
