@@ -59,12 +59,12 @@ public class DogClass {
         this.clickCount++;
     }
 
-    public double getEffectiveSpeed(Arena arena) {
+    public double getEffectiveSpeed(Obstacle arena) {
         double effectiveSpeed = this.baseSpeed;
         if (this.skill.equalsIgnoreCase(arena.getName())) {
-            effectiveSpeed += 10; // Misalnya, menambah kecepatan sebesar 10 jika cocok
+            effectiveSpeed += 10; 
         }
-        effectiveSpeed *= (1 - arena.getReduce()); // Mengurangi kecepatan berdasarkan arena
+        effectiveSpeed *= (1 - arena.getReduce());
         return effectiveSpeed;
     }
 }

@@ -20,13 +20,11 @@ public class DbConnect {
         }
     }
 
-    // Mengambil 5 anjing secara acak dari database
     public static List<DogClass> getRandomDogs(int count) throws SQLException {
         String query = "SELECT * FROM dog ORDER BY RAND() LIMIT ?";
         List<DogClass> dogs = new ArrayList<>();
-        String[] conditions = { "Super", "Healthy", "Tired", "Injured" }; // Daftar kondisi yang bisa dipilih secara
-                                                                          // acak
-        Random random = new Random(); // Untuk menghasilkan angka acak
+        String[] conditions = { "Super", "Healthy", "Tired", "Injured" }; 
+        Random random = new Random(); 
 
         try (Connection connection = getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)) {
@@ -36,35 +34,31 @@ public class DbConnect {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
-                // Menentukan kondisi anjing secara acak dari daftar kondisi
                 String dogCondition = conditions[random.nextInt(conditions.length)];
                 String skill = resultSet.getString("skill");
                 int baseSpeed = resultSet.getInt("baseSpeed");
                 String imgPath = resultSet.getString("imgPath");
                 int price = resultSet.getInt("price");
 
-                dogs.add(new DogClass(id, name, dogCondition, skill, baseSpeed, imgPath, price)); // Menambahkan dog
-                                                                                                  // dengan kondisi acak
+                dogs.add(new DogClass(id, name, dogCondition, skill, baseSpeed, imgPath, price));                                                                                     
             }
         }
         return dogs;
     }
 
-    // Mengambil arena secara acak dari database
-    public static List<Arena> getRandomArenas(int count) throws SQLException {
-        List<Arena> arenaList = new ArrayList<>();
-        String query = "SELECT * FROM arena ORDER BY RAND() LIMIT ?";
+    public static Obstacle getRandomArena() throws SQLException {
+        String query = "SELECT * FROM arena ORDER BY RAND() LIMIT 1";
         try (Connection connection = getConnection();
                 PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, count);
             ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
                 String name = rs.getString("name");
                 double reduce = rs.getDouble("reduce");
                 int length = rs.getInt("length");
-                arenaList.add(new Arena(name, reduce, length));
+                return new Obstacle(name, reduce, length);
+            } else {
+                throw new SQLException("No arena found in the database.");
             }
         }
-        return arenaList;
     }
 }

@@ -102,7 +102,7 @@ public class StartFrame extends JFrame {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                 g2d.setColor(new Color(255, 165, 0));
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Border melengkung
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); 
 
                 g2d.setColor(new Color(0, 0, 0, 50));
                 g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 30, 30);
@@ -151,7 +151,6 @@ public class StartFrame extends JFrame {
             int buttonX = startX + i * (buttonWidth + buttonSpacing);
             selectButton.setBounds(buttonX, 500, buttonWidth, buttonHeight);
 
-            // Panel yang menampilkan informasi anjing (popup)
             JPanel popupPanel = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
@@ -167,13 +166,11 @@ public class StartFrame extends JFrame {
             popupPanel.setOpaque(false);
             popupPanel.setPreferredSize(new Dimension(250, 300));
 
-            // Menambahkan padding agar teks tidak terlalu rapat dengan batas
             popupPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             Font headerFont = new Font("Arial", Font.BOLD, 16);
             Font labelFont = new Font("Arial", Font.PLAIN, 14);
 
-            // Label dengan teks anjing
             JLabel nameLabel = new JLabel(dog.getName());
             nameLabel.setFont(headerFont);
             nameLabel.setForeground(Color.DARK_GRAY);
@@ -199,13 +196,11 @@ public class StartFrame extends JFrame {
             priceLabel.setForeground(Color.DARK_GRAY);
             priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Menambahkan pemisah antar informasi
             JSeparator separator1 = new JSeparator();
             JSeparator separator2 = new JSeparator();
             JSeparator separator3 = new JSeparator();
             JSeparator separator4 = new JSeparator();
 
-            // Menambahkan label dan pemisah ke panel popup
             popupPanel.add(nameLabel);
             popupPanel.add(separator1);
             popupPanel.add(conditionLabel);
@@ -216,23 +211,19 @@ public class StartFrame extends JFrame {
             popupPanel.add(separator4);
             popupPanel.add(priceLabel);
 
-            // Membuat scroll pane untuk panel popup
             JScrollPane scrollPane = new JScrollPane(popupPanel);
             scrollPane.setPreferredSize(new Dimension(250, 300));
             scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-            // Menambahkan efek bayangan
-            popupPanel.setBackground(Color.YELLOW); // Pastikan panel kuning terlihat
+            popupPanel.setBackground(Color.YELLOW); 
             popupPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
             popupPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             selectButton.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
-                    // Hitung posisi popup agar berada di tengah tombol
                     int popupX = selectButton.getX() + (selectButton.getWidth() - scrollPane.getWidth()) / 2;
                     int popupY = selectButton.getY() - scrollPane.getPreferredSize().height - 10;
 
-                    // Mengatur posisi dan visibilitas popup
                     scrollPane.setBounds(popupX, popupY, scrollPane.getPreferredSize().width,
                             scrollPane.getPreferredSize().height);
                     scrollPane.setVisible(true);
@@ -258,9 +249,9 @@ public class StartFrame extends JFrame {
 
             selectButton.addActionListener(e -> {
                 if (remainingBets > 0) {
-                    dog.incrementClickCount(); // Increment click count
-                    remainingBets--; // Kurangi sisa bet
-                    clickCountLabel.setText("Bet: " + dog.getClickCount() + "X"); // Update label
+                    dog.incrementClickCount(); 
+                    remainingBets--; 
+                    clickCountLabel.setText("Bet: " + dog.getClickCount() + "X"); 
                     betInfoLabel.setText("Coins: " + remainingBets);
                 } else {
                     JOptionPane.showMessageDialog(null, "No bets remaining!", "Bet Limit Reached",
@@ -276,9 +267,15 @@ public class StartFrame extends JFrame {
             startRaceButton.setUI(new RoundButtonUI());
 
             startRaceButton.addActionListener(e -> {
-                new RaceFrame(dog, dogs);
-                dogSelectionFrame.dispose();
+                try {
+                    Obstacle randomArena = DbConnect.getRandomArena(); 
+                    new RaceFrame(dog, dogs, randomArena); 
+                    dogSelectionFrame.dispose(); 
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Error fetching arena: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                }
             });
+            
 
             dogSelectionPanel.add(selectButton);
             dogSelectionPanel.add(clickCountLabel);
