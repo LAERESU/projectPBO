@@ -22,7 +22,20 @@ public class StartFrame extends JFrame {
         this.remainingBets = coins;
         this.setResizable(false);
 
-        this.getContentPane().setBackground(Color.CYAN);
+        ImageIcon backgroundImageIcon = new ImageIcon("ProjectPBO/res/image/startBG.png");
+        Image backgroundImage = backgroundImageIcon.getImage();
+
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+
+        backgroundPanel.setLayout(null);
+        this.setContentPane(backgroundPanel);
 
         try {
             dogs = DbConnect.getRandomDogs(5);
@@ -36,9 +49,9 @@ public class StartFrame extends JFrame {
             e.printStackTrace();
         }
         Random random = new Random();
-        for (DogClass dog : dogs) {   // Modifier jika skill sesuai dengan arena
+        for (DogClass dog : dogs) { // Modifier jika skill sesuai dengan arena
             boolean isSkillMatched = dog.getSkill().equals(randomArena.getName());
-        
+
             if (dog.getDogCondition().equals("Super")) {
                 if (isSkillMatched) {
                     dog.setBaseSpeed(random.nextInt(3, 5)); // Keunggulan besar jika skill sesuai
@@ -73,7 +86,6 @@ public class StartFrame extends JFrame {
                 }
             }
         }
-
 
         JPanel betPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
@@ -143,7 +155,22 @@ public class StartFrame extends JFrame {
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
         dogSelectionFrame.setLayout(null);
         dogSelectionFrame.setResizable(false);
-    
+
+        ImageIcon backgroundImageIcon = new ImageIcon("ProjectPBO/res/image/dogBG.png");
+        Image backgroundImage = backgroundImageIcon.getImage();
+
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null); // Draw the background image
+            }
+        };
+
+        backgroundPanel.setLayout(null); // Set the layout to null so you can position components manually
+        dogSelectionFrame.setContentPane(backgroundPanel);
+
         // Panel informasi tentang bets
         JPanel betInfoPanel = new JPanel() {
             @Override
@@ -151,10 +178,10 @@ public class StartFrame extends JFrame {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    
+
                 g2d.setColor(new Color(255, 165, 0));
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-    
+
                 g2d.setColor(new Color(0, 0, 0, 50));
                 g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 30, 30);
             }
@@ -162,28 +189,45 @@ public class StartFrame extends JFrame {
         betInfoPanel.setLayout(new BorderLayout());
         betInfoPanel.setBounds(10, 10, 220, 60);
         betInfoPanel.setOpaque(false);
-    
+
         JLabel betInfoLabel = new JLabel("Coins: " + remainingBets);
         betInfoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         betInfoLabel.setForeground(Color.WHITE);
         betInfoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         betInfoPanel.add(betInfoLabel, BorderLayout.CENTER);
-    
-        JLabel obstacleLabel = new JLabel("Obstacle: " + randomArena.getName());
-        obstacleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        obstacleLabel.setForeground(Color.BLACK);
-        obstacleLabel.setBackground(Color.YELLOW); 
-        obstacleLabel.setOpaque(false);
-        obstacleLabel.setBounds(500, 200, 400, 100); 
+
+        JPanel obstacleInfoPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int arcSize = 30;
+                g2d.setColor(new Color(255, 165, 0));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), arcSize, arcSize);
+
+                g2d.setColor(new Color(0, 0, 0, 50));
+                g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, arcSize, arcSize);
+            }
+        };
+        obstacleInfoPanel.setLayout(new BorderLayout());
+        obstacleInfoPanel.setBounds(10, 80, 220, 60);
+        obstacleInfoPanel.setOpaque(false);
+
+        // Create the label for the obstacle information
+        JLabel obstacleLabel = new JLabel(randomArena.getName());
+        obstacleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        obstacleLabel.setForeground(Color.WHITE); // Text color
         obstacleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        obstacleInfoPanel.add(obstacleLabel, BorderLayout.CENTER);
 
         // Panel pemilihan anjing
         JPanel dogSelectionPanel = new JPanel();
         dogSelectionPanel.setLayout(null);
         dogSelectionPanel.setOpaque(false);
         dogSelectionPanel.setBounds(0, 0, WIDTH, HEIGHT);
-    
-        dogSelectionFrame.add(obstacleLabel); // Tambahkan label obstacle ke frame
+
+        dogSelectionFrame.add(obstacleInfoPanel);
         dogSelectionFrame.add(betInfoPanel);
         dogSelectionFrame.add(dogSelectionPanel);
         dogSelectionFrame.setVisible(true);
@@ -280,7 +324,7 @@ public class StartFrame extends JFrame {
             scrollPane.setPreferredSize(new Dimension(250, 300));
             scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-            popupPanel.setBackground(Color.YELLOW); 
+            popupPanel.setBackground(Color.YELLOW);
             popupPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
             popupPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -314,9 +358,9 @@ public class StartFrame extends JFrame {
 
             selectButton.addActionListener(e -> {
                 if (remainingBets > 0) {
-                    dog.incrementClickCount(); 
-                    remainingBets--; 
-                    clickCountLabel.setText("Bet: " + dog.getClickCount() + "X"); 
+                    dog.incrementClickCount();
+                    remainingBets--;
+                    clickCountLabel.setText("Bet: " + dog.getClickCount() + "X");
                     betInfoLabel.setText("Coins: " + remainingBets);
                     dog.setPrice();
                 } else {
@@ -326,7 +370,7 @@ public class StartFrame extends JFrame {
             });
 
             JButton startRaceButton = new JButton("Start Race");
-            startRaceButton.setBounds(10, 100, 220, 60);
+            startRaceButton.setBounds(10, 150, 220, 60);
             startRaceButton.setBackground(Color.GREEN);
             startRaceButton.setForeground(Color.WHITE);
             startRaceButton.setFocusPainted(false);
@@ -340,13 +384,13 @@ public class StartFrame extends JFrame {
                 }
                 boolean anyDogBetted = dogs.stream().anyMatch(d -> d.getClickCount() > 0);
                 if (anyDogBetted) {
-                    new RaceFrame(dog, dogs, randomArena, remainingBets); 
-                    dogSelectionFrame.dispose(); 
+                    new RaceFrame(dog, dogs, randomArena, remainingBets);
+                    dogSelectionFrame.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(null, "No dog has been betted on!", "No Bets", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "No dog has been betted on!", "No Bets",
+                            JOptionPane.WARNING_MESSAGE);
                 }
             });
-            
 
             dogSelectionPanel.add(selectButton);
             dogSelectionPanel.add(clickCountLabel);
