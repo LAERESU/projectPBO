@@ -141,17 +141,18 @@ public class StartFrame extends JFrame {
         JFrame dogSelectionFrame = new JFrame("Choose Your Dog");
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
         dogSelectionFrame.setLayout(null);
-
+    
+        // Panel informasi tentang bets
         JPanel betInfoPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+    
                 g2d.setColor(new Color(255, 165, 0));
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); 
-
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+    
                 g2d.setColor(new Color(0, 0, 0, 50));
                 g2d.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 30, 30);
             }
@@ -159,17 +160,31 @@ public class StartFrame extends JFrame {
         betInfoPanel.setLayout(new BorderLayout());
         betInfoPanel.setBounds(10, 10, 220, 60);
         betInfoPanel.setOpaque(false);
-
+    
         JLabel betInfoLabel = new JLabel("Coins: " + remainingBets);
         betInfoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         betInfoLabel.setForeground(Color.WHITE);
         betInfoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         betInfoPanel.add(betInfoLabel, BorderLayout.CENTER);
+    
+        JLabel obstacleLabel = new JLabel("Obstacle: " + randomArena.getName());
+        obstacleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        obstacleLabel.setForeground(Color.BLACK);
+        obstacleLabel.setBackground(Color.YELLOW); 
+        obstacleLabel.setOpaque(false);
+        obstacleLabel.setBounds(500, 200, 400, 100); 
+        obstacleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        // Panel pemilihan anjing
         JPanel dogSelectionPanel = new JPanel();
         dogSelectionPanel.setLayout(null);
         dogSelectionPanel.setOpaque(false);
         dogSelectionPanel.setBounds(0, 0, WIDTH, HEIGHT);
+    
+        dogSelectionFrame.add(obstacleLabel); // Tambahkan label obstacle ke frame
+        dogSelectionFrame.add(betInfoPanel);
+        dogSelectionFrame.add(dogSelectionPanel);
+        dogSelectionFrame.setVisible(true);
 
         int buttonWidth = 100;
         int buttonHeight = 100;

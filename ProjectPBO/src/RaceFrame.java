@@ -35,8 +35,8 @@ public class RaceFrame extends JFrame {
         racePanel.setBounds(0, 0, width, height);
         racePanel.setBackground(Color.GREEN);
     
-        int obstacleX = (int) (width * 0.3); // Lokasi obstacle di jalur balapan
-        int obstacleWidth = obstacle.getLength(); // Panjang area hambatan dari obstacle.getLength()
+        int obstacleX = (int) (width * 0.3); 
+        int obstacleWidth = obstacle.getLength(); 
     
         for (int i = 0; i < allDogs.size(); i++) {
             DogClass dog = allDogs.get(i);
@@ -55,24 +55,22 @@ public class RaceFrame extends JFrame {
             dogLabel.setBounds(startX, startY, 100, 100);
     
             racePanel.add(dogLabel);
-    
-            // Membuat area hambatan sebagai JPanel
+
             JPanel obstaclePanel = new JPanel();
             obstaclePanel.setBackground(Color.ORANGE);
-            obstaclePanel.setBounds(obstacleX, startY, obstacleWidth, 100); // Lebar hambatan sesuai panjang obstacle.getLength()
-    
-            // Membuat label untuk nama obstacle dan menambahkannya ke dalam area hambatan
+            obstaclePanel.setBounds(obstacleX, startY, obstacleWidth, 100); 
+
             JLabel obstacleLabel = new JLabel(obstacle.getName());
             obstacleLabel.setHorizontalAlignment(SwingConstants.CENTER);
             obstacleLabel.setForeground(Color.BLACK);
-            obstacleLabel.setBounds(0, 35, obstacleWidth, 30); // Posisi teks di dalam area hambatan
+            obstacleLabel.setBounds(0, 35, obstacleWidth, 30); 
     
             obstaclePanel.setLayout(null);
             obstaclePanel.add(obstacleLabel);
     
             racePanel.add(obstaclePanel);
     
-            Thread dogThread = new Thread(new DogRaceTask(dogLabel, dog.getBaseSpeed(), dog.getName(), obstacleX, obstacleWidth, dog.getPrice()));
+            Thread dogThread = new Thread(new DogRaceTask(dogLabel, dog.getBaseSpeed(), dog.getName(), obstacleX, obstacleWidth, dog.getPrice(), dog.getSkill()));
             dogThread.start();
         }
     
@@ -85,23 +83,24 @@ public class RaceFrame extends JFrame {
         private JLabel dogLabel;
         private int baseSpeed;
         private String dogName;
+        private String dogSkill;
         private int obstacleX;
         private int obstacleWidth;
         private int originalSpeed;
         private int prize;
         private boolean isSlowed = false;
     
-        public DogRaceTask(JLabel dogLabel, int baseSpeed, String dogName, int obstacleX, int obstacleWidth, int prize) {
+        public DogRaceTask(JLabel dogLabel, int baseSpeed, String dogName, int obstacleX, int obstacleWidth, int prize, String dogSkill) {
             this.dogLabel = dogLabel;
             this.baseSpeed = baseSpeed;
             this.dogName = dogName;
+            this.dogSkill = dogSkill;
             this.obstacleX = obstacleX;
             this.obstacleWidth = obstacleWidth;
             this.prize = prize;
             this.originalSpeed = baseSpeed;
         }
     
-        @Override
         public void run() {
             try {
                 startSignal.await();
@@ -111,7 +110,7 @@ public class RaceFrame extends JFrame {
                         int x = dogLabel.getX();
     
                         if (x >= obstacleX - obstacleWidth && x <= obstacleX + obstacleWidth) {
-                            if (!isSlowed) {
+                            if (!isSlowed && !dogSkill.equals(obstacle.getName())) {
                                 isSlowed = true;
                                 baseSpeed -= (100 * obstacle.getReduce());
                             }
