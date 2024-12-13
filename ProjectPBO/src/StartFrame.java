@@ -20,6 +20,7 @@ public class StartFrame extends JFrame {
         this.setSize(WIDTH, HEIGHT);
         this.setLayout(null);
         this.remainingBets = coins;
+        this.setResizable(false);
 
         this.getContentPane().setBackground(Color.CYAN);
 
@@ -141,6 +142,7 @@ public class StartFrame extends JFrame {
         JFrame dogSelectionFrame = new JFrame("Choose Your Dog");
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
         dogSelectionFrame.setLayout(null);
+        dogSelectionFrame.setResizable(false);
     
         // Panel informasi tentang bets
         JPanel betInfoPanel = new JPanel() {

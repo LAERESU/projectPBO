@@ -13,6 +13,7 @@ public class FinishFrame extends JFrame {
         this.setSize(width, height);
         this.setLocationRelativeTo(null);
         this.remainingBets = coins;
+        this.setResizable(false);
 
         JPanel mainPanel = new JPanel() {
             @Override

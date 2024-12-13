@@ -20,6 +20,7 @@ public class RaceFrame extends JFrame {
         this.setLayout(null);
         this.getContentPane().setBackground(Color.GREEN);
         this.remainingBets = coins;
+        this.setResizable(false);
 
         this.allDogs = allDogs;
         this.startSignal = new CountDownLatch(1);
