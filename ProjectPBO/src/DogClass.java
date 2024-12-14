@@ -1,7 +1,5 @@
-public class DogClass {
+public class DogClass extends AbstractHewan {
     int id;
-    String name;
-    String condition;
     String skill;
     int baseSpeed;
     String imgPath;

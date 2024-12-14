@@ -6,7 +6,7 @@ import java.util.List;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Random;
 
-public class StartFrame extends JFrame {
+public class StartFrame extends JFrame implements StartFrameInterface {
     private static final int WIDTH = 1440;
     private static final int HEIGHT = 900;
     private List<DogClass> dogs;
@@ -150,7 +150,7 @@ public class StartFrame extends JFrame {
         this.setVisible(true);
     }
 
-    private void showDogSelection(Obstacle randomArena) {
+    public void showDogSelection(Obstacle randomArena) {
         JFrame dogSelectionFrame = new JFrame("Choose Your Dog");
         dogSelectionFrame.setSize(WIDTH, HEIGHT);
         dogSelectionFrame.setLayout(null);
