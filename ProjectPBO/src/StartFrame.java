@@ -121,7 +121,7 @@ public class StartFrame extends JFrame {
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String betAmount = betField.getText();
-                if (remainingBets == 0) {
+                if (remainingBets >= 0) {
                     try {
                         int bet = Integer.parseInt(betAmount);
                         if (bet < 1) {
@@ -362,7 +362,9 @@ public class StartFrame extends JFrame {
                     remainingBets--;
                     clickCountLabel.setText("Bet: " + dog.getClickCount() + "X");
                     betInfoLabel.setText("Coins: " + remainingBets);
-                    dog.setPrice();
+                    if(dog.getClickCount() > 2){
+                        dog.setPrice();
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "No bets remaining!", "Bet Limit Reached",
                             JOptionPane.WARNING_MESSAGE);
