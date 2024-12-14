@@ -18,7 +18,6 @@ public class RaceFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
         this.setLayout(null);
-        this.getContentPane().setBackground(Color.GREEN);
         this.remainingBets = coins;
         this.setResizable(false);
 
@@ -31,13 +30,34 @@ public class RaceFrame extends JFrame {
     }
 
     private void initializeRace() {
-        JPanel racePanel = new JPanel();
+        JPanel racePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+
+                ImageIcon backgroundImageIcon = new ImageIcon("ProjectPBO/res/image/raceBG.jpg");
+                Image backgroundImage = backgroundImageIcon.getImage();
+                g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), null);
+
+                int trackHeight = 120;
+                int trackMargin = 20; 
+    
+                for (int i = 0; i < allDogs.size(); i++) {
+                    int y = 90 + i * (trackHeight + trackMargin);
+
+                    Color trackColor = new Color(139, 69, 19, 128); 
+                    g2d.setColor(trackColor);
+
+                    g2d.fillRect(0, y, width, trackHeight);
+                }
+            }
+        };
         racePanel.setLayout(null);
         racePanel.setBounds(0, 0, width, height);
-        racePanel.setBackground(Color.GREEN);
     
-        int obstacleX = (int) (width * 0.3); 
-        int obstacleWidth = obstacle.getLength(); 
+        int obstacleX = (int) (width * 0.3);
+        int obstacleWidth = obstacle.getLength();
     
         for (int i = 0; i < allDogs.size(); i++) {
             DogClass dog = allDogs.get(i);
@@ -52,24 +72,18 @@ public class RaceFrame extends JFrame {
             dogLabel.setHorizontalTextPosition(SwingConstants.CENTER);
     
             int startX = width - 150;
-            int startY = 150 + i * 120;
+            int startY = 100 + i * 140;
             dogLabel.setBounds(startX, startY, 100, 100);
     
             racePanel.add(dogLabel);
-
-            JPanel obstaclePanel = new JPanel();
-            obstaclePanel.setBackground(Color.ORANGE);
-            obstaclePanel.setBounds(obstacleX, startY, obstacleWidth, 100); 
-
-            JLabel obstacleLabel = new JLabel(obstacle.getName());
-            obstacleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            obstacleLabel.setForeground(Color.BLACK);
-            obstacleLabel.setBounds(0, 35, obstacleWidth, 30); 
     
-            obstaclePanel.setLayout(null);
-            obstaclePanel.add(obstacleLabel);
+            JLabel obstacleLabel = new JLabel();
+            ImageIcon obstacleIcon = new ImageIcon(obstacle.getImgPath());
+            Image scaledObstacleImage = obstacleIcon.getImage().getScaledInstance(obstacleWidth, 100, Image.SCALE_SMOOTH);
+            obstacleLabel.setIcon(new ImageIcon(scaledObstacleImage));
+            obstacleLabel.setBounds(obstacleX, startY, obstacleWidth, 100);
     
-            racePanel.add(obstaclePanel);
+            racePanel.add(obstacleLabel);
     
             Thread dogThread = new Thread(new DogRaceTask(dogLabel, dog.getBaseSpeed(), dog.getName(), obstacleX, obstacleWidth, dog.getPrice(), dog.getSkill()));
             dogThread.start();
@@ -79,6 +93,7 @@ public class RaceFrame extends JFrame {
     
         new Timer(2000, e -> startSignal.countDown()).start();
     }
+        
     
     private class DogRaceTask implements Runnable {
         private JLabel dogLabel;

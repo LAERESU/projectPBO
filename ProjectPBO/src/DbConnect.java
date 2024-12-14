@@ -55,7 +55,8 @@ public class DbConnect {
                 String name = rs.getString("name");
                 double reduce = rs.getDouble("reduce");
                 int length = rs.getInt("length");
-                return new Obstacle(name, reduce, length);
+                String imgPath = rs.getString("image");
+                return new Obstacle(name, reduce, length, imgPath);
             } else {
                 throw new SQLException("No arena found in the database.");
             }
