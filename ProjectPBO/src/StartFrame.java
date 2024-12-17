@@ -124,7 +124,7 @@ public class StartFrame extends JFrame implements StartFrameInterface {
                 if (remainingBets >= 0) {
                     try {
                         int bet = Integer.parseInt(betAmount);
-                        if (bet < 1) {
+                        if (bet < 1 && remainingBets == 0) {
                             JOptionPane.showMessageDialog(null, "Bet amount must be at least 1!", "Invalid Bet",
                                     JOptionPane.ERROR_MESSAGE);
                         } else {
@@ -362,9 +362,6 @@ public class StartFrame extends JFrame implements StartFrameInterface {
                     remainingBets--;
                     clickCountLabel.setText("Bet: " + dog.getClickCount() + "X");
                     betInfoLabel.setText("Coins: " + remainingBets);
-                    if(dog.getClickCount() > 2){
-                        dog.setPrice();
-                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "No bets remaining!", "Bet Limit Reached",
                             JOptionPane.WARNING_MESSAGE);
@@ -382,6 +379,8 @@ public class StartFrame extends JFrame implements StartFrameInterface {
                 for (DogClass d : dogs) {
                     if (d.getClickCount() == 0) {
                         d.setPrice(0);
+                    }else{
+                        d.setPrice(d.getPrice() * d.getClickCount());
                     }
                 }
                 boolean anyDogBetted = dogs.stream().anyMatch(d -> d.getClickCount() > 0);

@@ -66,10 +66,6 @@ public class DogClass extends AbstractHewan {
         return effectiveSpeed;
     }
 
-    public void setPrice(){
-        this.price += price;
-    }
-
     public void setPrice(int price){
         this.price = price;
     }
