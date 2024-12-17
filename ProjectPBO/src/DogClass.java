@@ -7,9 +7,8 @@ public class DogClass extends AbstractHewan {
     private int clickCount;
 
     public DogClass(int id, String name, String condition, String skill, int baseSpeed, String imgPath, int price) {
+        super(name, condition);
         this.id = id;
-        this.name = name;
-        this.condition = condition;
         this.skill = skill;
         this.baseSpeed = baseSpeed;
         this.imgPath = imgPath;
